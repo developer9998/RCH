@@ -9,6 +9,7 @@ namespace RCH.CI
 {
     internal class RchView : ComputerView
     {
+        public static RchView Instance;
         internal string HighlightDynamic(string text)
         {
             foreach(string key in Manager.DynamicDict.Keys)
@@ -25,9 +26,12 @@ namespace RCH.CI
         public override void OnShow(object[] args)
         {
             base.OnShow(args);
+            Instance = this;
+
             DrawScreen();
         }
-        private void DrawScreen()
+
+        public void DrawScreen()
         {
             SetText(str =>
             {
@@ -35,12 +39,12 @@ namespace RCH.CI
                 str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLine();
                 str.AppendClr("Room Code Hider", "FF0066").AppendLine();
                 str.Append("By <color=#38FF8D>Frogrilla</color>").AppendLine();
-                str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLine();
-                str.EndAlign();
+                str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLines(2).EndAlign();
+                str.AppendClr((Manager.Enabled ? "[Enabled]" : "[Disabled]"), (Manager.Enabled ? "#01FF55" : "#FF0033")).AppendLines(2);
                 str.Append($"Current Header:\n{HighlightDynamic(Manager.CustomTexts[Manager.Index])}").AppendLine();
-                str.AppendClr((Manager.Enabled ? "\nEnabled" : "\nDisabled"), (Manager.Enabled ? "#01FF55" : "#FF0033")).AppendLine();
             });
         }
+
         public override void OnKeyPressed(EKeyboardKey key)
         {
             switch (key)

@@ -24,7 +24,7 @@
       <HintPath>$(BepInExAssemblyPath)\BepInEx.Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Bepinject">
-      <HintPath>D:\Steam\steamapps\common\Gorilla Tag\BepInEx\plugins\Bepinject-Auros\Bepinject.dll</HintPath>
+      <HintPath>$(PluginsPath)\Bepinject-Auros\Bepinject.dll</HintPath>
     </Reference>
     <Reference Include="Cinemachine">
       <HintPath>$(GameAssemblyPath)\Cinemachine.dll</HintPath>
@@ -33,7 +33,7 @@
       <HintPath>$(GameAssemblyPath)\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="ComputerInterface">
-      <HintPath>D:\Steam\steamapps\common\Gorilla Tag\BepInEx\plugins\ComputerInterface\ComputerInterface.dll</HintPath>
+      <HintPath>$(PluginsPath)\ComputerInterface\ComputerInterface.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(GameAssemblyPath)\Mono.Security.dll</HintPath>
@@ -291,10 +291,10 @@
       <HintPath>$(GameAssemblyPath)\websocket-sharp.dll</HintPath>
     </Reference>
     <Reference Include="Zenject">
-      <HintPath>D:\Steam\steamapps\common\Gorilla Tag\BepInEx\plugins\Extenject\Zenject.dll</HintPath>
+      <HintPath>$(PluginsPath)\Extenject\Zenject.dll</HintPath>
     </Reference>
     <Reference Include="Zenject-usage">
-      <HintPath>D:\Steam\steamapps\common\Gorilla Tag\BepInEx\plugins\Extenject\Zenject-usage.dll</HintPath>
+      <HintPath>$(PluginsPath)\Extenject\Zenject-usage.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

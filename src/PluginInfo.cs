@@ -7,6 +7,6 @@
     {
         public const string GUID = "com.frogrilla.gorillatag.rch";
         public const string Name = "Room Code Hider";
-        public const string Version = "1.0.0";
+        public const string Version = "1.0.1";
     }
 }

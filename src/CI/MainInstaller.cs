@@ -7,7 +7,7 @@ namespace RCH.CI
     {
         public override void InstallBindings()
         {
-            base.Container.Bind<IComputerModEntry>().To<RchEntry>().AsSingle();
+            Container.Bind<IComputerModEntry>().To<RchEntry>().AsSingle();
         }
     }
 }
