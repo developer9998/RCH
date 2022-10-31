@@ -4,18 +4,11 @@ using UnityEngine;
 
 namespace RCH
 {
-    [HarmonyPatch(typeof(GorillaScoreBoard))]
-    [HarmonyPatch("Awake")]
-    internal class ScoreBoardAwakePatch
-    {
-        internal static void Postfix(GorillaScoreBoard __instance) { try { __instance.gameObject.AddComponent<ScoreboardBeginningManager>(); } catch { } } // Attempts to add the component to the new scoreboard.
-    }
-
-    internal class ScoreboardBeginningManager : MonoBehaviour
+    public class ScoreboardBeginningManager : MonoBehaviour
     {
         internal ScoreboardBeginningButton[] buttonArray = new ScoreboardBeginningButton[2]; // The array of buttons that are used to swap the scoreboard headers, we only need two though.
 
-        internal void Start()
+        internal void Awake()
         {
             CreateButton(0, new Vector3(-71.7f, 61.5f, 1.8f), new Vector3(103.3446f, 12.97541f, 5.282512f)); // Creates a button with some data (The index, local position, and local scale)
             CreateButton(1, new Vector3(33.8f, 61.5f, 1.8f), new Vector3(103.3446f, 12.97541f, 5.282512f));
@@ -60,7 +53,7 @@ namespace RCH
         }
     }
 
-    internal class ScoreboardBeginningButton : GorillaPressableButton
+    public class ScoreboardBeginningButton : GorillaPressableButton
     {
         internal ScoreboardBeginningManager scoreboardBeginningManager;
 

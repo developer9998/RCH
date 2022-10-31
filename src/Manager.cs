@@ -1,18 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using HarmonyLib;
-using UnityEngine;
 using Photon.Pun;
 using RCH.CI;
+using Photon.Realtime;
 
 namespace RCH
 {
     [HarmonyPatch(typeof(GorillaScoreBoard))]
+    [HarmonyPatch("Awake", MethodType.Normal)]
+    internal class ScoreboardAwakePatch
+    {
+        public static void Prefix(GorillaScoreBoard __instance)
+        {
+            Manager.boards.Add(__instance);
+            if (__instance.gameObject.GetComponent<ScoreboardBeginningManager>() == null) { __instance.gameObject.AddComponent<ScoreboardBeginningManager>(); }
+        }
+    }
+
+    [HarmonyPatch(typeof(PhotonNetwork))]
+    [HarmonyPatch("Disconnect", MethodType.Normal)]
+    internal class DisconnectPatch
+    {
+        public static void Prefix() 
+        { 
+            if (PhotonNetwork.InRoom) 
+            { 
+                Manager.boards.Clear();
+            } 
+        }
+    }
+
+    [HarmonyPatch(typeof(GorillaScoreBoard))]
     [HarmonyPatch("GetBeginningString")]
     internal static class Manager
     {
+        public static List<GorillaScoreBoard> boards = new List<GorillaScoreBoard>();
         internal static Dictionary<string, string> DynamicDict = new Dictionary<string, string>()
         {
             { "{name}",     "out" },
@@ -31,7 +54,7 @@ namespace RCH
         internal static string[] CustomTexts = new string[]
         {
             "ROOM ID: {pubname} GAME ROOM: {mode}", // The current text used for the base game.
-            "{count}/{max}    {public} {mode}, {pubname}", // Displays the player count with the limit as well as some room info.
+            "{count}/{max}    {mode} ROOM ID: {pubname}", // Displays the player count with the limit as well as some room info.
             "{count}/{max}    {public} {mode}, {name}", // Same as the previous one but it shows any room code you're in and not just the public lobby codes.
             "{count}/{max}    -ROOM HIDDEN-",  // Same as the previous one but without the room info.
             "ROOM ID: {name}", // Displays just the room code even in a private lobby.
@@ -68,21 +91,21 @@ namespace RCH
         {
             foreach(string key in DynamicDict.Keys) text = text.Replace(key, DynamicDict[key]);
 
-            if (text.Length > 37)
-                return text.Substring(0, 37); // Cuts down the length of the text if it's too long.
+            if (text.Length > 45)
+                return text.Substring(0, 45); // Cuts down the length of the text if it's too long.
 
             return text;
         }
 
         internal static void UpdateDict()
         {
-            DynamicDict["{name}"]   = PhotonNetwork.CurrentRoom.Name;
-            DynamicDict["{region}"] = PhotonNetwork.CloudRegion.Replace("/*","").ToUpper();
-            DynamicDict["{mode}"]   = GorillaGameManager.instance.GameMode();
+            DynamicDict["{name}"] = PhotonNetwork.CurrentRoom.Name;
+            DynamicDict["{region}"] = PhotonNetwork.CloudRegion.Replace("/*", "").ToUpper();
+            DynamicDict["{mode}"] = GorillaGameManager.instance.GameMode();
             DynamicDict["{public}"] = PhotonNetwork.CurrentRoom.IsVisible ? "PUBLIC" : "PRIVATE";
-            DynamicDict["{count}"]  = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
-            DynamicDict["{max}"]    = PhotonNetwork.CurrentRoom.MaxPlayers.ToString();
-            DynamicDict["{ping}"]   = PhotonNetwork.GetPing().ToString();
+            DynamicDict["{count}"] = PhotonNetwork.CurrentRoom.PlayerCount.ToString();
+            DynamicDict["{max}"] = PhotonNetwork.CurrentRoom.MaxPlayers.ToString();
+            DynamicDict["{ping}"] = PhotonNetwork.GetPing().ToString();
             DynamicDict["{caught}"] = GetTaggedPlayers().ToString();
             DynamicDict["{blue}"] = GetPlayersOfTeam(false).ToString();
             DynamicDict["{red}"] = GetPlayersOfTeam(true).ToString();
@@ -103,38 +126,32 @@ namespace RCH
 
         internal static void ForceUpdate()
         {
-            Console.WriteLine("Forcing scoreboard updates");
-            if (PhotonNetwork.InRoom)
+            if (boards.Count != 0)
             {
-                foreach (GorillaScoreBoard board in GorillaUIParent.instance.GetComponentsInChildren<GorillaScoreBoard>())
+                foreach (GorillaScoreBoard board in boards)
                 {
+                    UpdateDict();
                     board.RedrawPlayerLines();
-                    Console.WriteLine($"{board.name} updated");
                 }
-            }
-            else
-            {
-                Console.WriteLine($"Not in room, cannot update");
             }
         }
 
         internal static int GetTaggedPlayers()
         {
-            int taggedPlayers = 0;
+            int teamPlayers = 0;
+            int[] infectedArray = new int[5] { 1, 2, 3, 7, 11 };
 
             if (GorillaGameManager.instance != null)
             {
-                if (GorillaGameManager.instance.GetComponent<GorillaTagManager>() != null) { foreach (int infectedArray in GorillaGameManager.instance.GetComponent<GorillaTagManager>().currentInfectedArray) if (infectedArray != 0) taggedPlayers++; }
-                else if (GorillaGameManager.instance.GetComponent<GorillaHuntManager>() != null) { foreach (int huntedArray in GorillaGameManager.instance.GetComponent<GorillaHuntManager>().currentHuntedArray) if (huntedArray != 0) taggedPlayers++; }
-                else if (GorillaGameManager.instance.GetComponent<GorillaBattleManager>() != null) { foreach (int playerLivesArray in GorillaGameManager.instance.GetComponent<GorillaBattleManager>().playerLivesArray) if (playerLivesArray == 0) taggedPlayers++; }
+                foreach (VRRig rig in GorillaParent.instance.vrrigs)
+                {
+                    if (infectedArray.Contains(rig.setMatIndex))
+                        teamPlayers++;
+                }
             }
+            // Checks all the VRRig's setMatIndex variable to see if they're on an array of "infected" integers
 
-            return taggedPlayers;
-        }
-
-        internal static bool HasFlag(GorillaBattleManager.BattleStatus state, GorillaBattleManager.BattleStatus statusFlag)
-        {
-            return (state & statusFlag) > GorillaBattleManager.BattleStatus.None;
+            return teamPlayers;
         }
 
         internal static int GetPlayersOfTeam(bool isRedTeam)
@@ -156,12 +173,12 @@ namespace RCH
                     }
                 }
             }
+            // Checks all the VRRig's setMatIndex variable to see if they're on an array of "infected" integers
 
             return teamPlayers;
         }
 
-
-        internal static bool Prefix(ref string __result)
+        public static bool Prefix(ref string __result)
         {
             UpdateDict();
             __result = GenDynamicText(CustomTexts[Index]) + "\n   PLAYER      COLOR   MUTE   REPORT";
