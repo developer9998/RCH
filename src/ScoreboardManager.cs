@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Photon.Pun;
 using System;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace RCH
     {
         internal ScoreboardBeginningButton[] buttonArray = new ScoreboardBeginningButton[2]; // The array of buttons that are used to swap the scoreboard headers, we only need two though.
 
-        internal void Awake()
+        internal void Start()
         {
             CreateButton(0, new Vector3(-71.7f, 61.5f, 1.8f), new Vector3(103.3446f, 12.97541f, 5.282512f)); // Creates a button with some data (The index, local position, and local scale)
             CreateButton(1, new Vector3(33.8f, 61.5f, 1.8f), new Vector3(103.3446f, 12.97541f, 5.282512f));
@@ -38,6 +39,7 @@ namespace RCH
             {
                 Manager.Index--;
                 Manager.ForceUpdate();
+                Manager.UpdateView();
                 return;
             }
 
@@ -45,20 +47,41 @@ namespace RCH
             {
                 Manager.Index++;
                 Manager.ForceUpdate();
+                Manager.UpdateView();
                 return;
             }
 
             Console.WriteLine("Button component is not in array");
-            Destroy(button); // Destroys the button component if it's not in the array, it's useless and we don't need it. 
         }
     }
 
-    public class ScoreboardBeginningButton : GorillaPressableButton
+    public class ScoreboardBeginningButton : MonoBehaviour
     {
         internal ScoreboardBeginningManager scoreboardBeginningManager;
+        internal float debounceTime = 0.25f;
+        internal float touchTime;
 
-        internal void Awake() { debounceTime = 0.05f; }
+        internal void OnTriggerEnter(Collider collider)
+        {
+            if (!(touchTime + debounceTime < Time.time)) return;
 
-        public override void ButtonActivation() { base.ButtonActivation(); try { scoreboardBeginningManager.ButtonPress(this); } catch { Console.WriteLine("ScoreboardBeginningManager null"); Destroy(this); } }
+            touchTime = Time.time;
+            Debug.Log("collision detected" + collider, collider);
+            if (!(collider.GetComponentInParent<GorillaTriggerColliderHandIndicator>() != null)) return;
+
+            GorillaTriggerColliderHandIndicator component = collider.GetComponent<GorillaTriggerColliderHandIndicator>();
+
+            if (component != null)
+            {
+                ButtonActivation();
+                GorillaTagger.Instance.offlineVRRig.PlayHandTapLocal(67, component.isLeftHand, 0.05f);
+                GorillaTagger.Instance.StartVibration(component.isLeftHand, GorillaTagger.Instance.tapHapticStrength / 2f, GorillaTagger.Instance.tapHapticDuration);
+            }
+        }
+
+        internal void ButtonActivation()
+        {
+            scoreboardBeginningManager.ButtonPress(this);
+        }
     }
 }

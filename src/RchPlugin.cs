@@ -10,7 +10,7 @@ namespace RCH
     public class RchPlugin : BaseUnityPlugin
     {
         public static string IndexPath;
-        void Awake()
+        internal void Start()
         {
             try { Zenjector.Install<CI.MainInstaller>().OnProject(); }
             catch { Console.WriteLine("RchView not installed"); }
@@ -29,6 +29,7 @@ namespace RCH
 
             Console.WriteLine($"\nRCH loaded headers:\n{File.ReadAllText(HeaderPath)}");
 
+            HarmonyPatches.ApplyHarmonyPatches();
             Manager.Enabled = true;
         }
     }

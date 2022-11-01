@@ -1,39 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
-using Photon.Pun;
 using RCH.CI;
+using Photon.Pun;
 using Photon.Realtime;
 
 namespace RCH
 {
     [HarmonyPatch(typeof(GorillaScoreBoard))]
-    [HarmonyPatch("Awake", MethodType.Normal)]
-    internal class ScoreboardAwakePatch
-    {
-        public static void Prefix(GorillaScoreBoard __instance)
-        {
-            Manager.boards.Add(__instance);
-            if (__instance.gameObject.GetComponent<ScoreboardBeginningManager>() == null) { __instance.gameObject.AddComponent<ScoreboardBeginningManager>(); }
-        }
-    }
-
-    [HarmonyPatch(typeof(PhotonNetwork))]
-    [HarmonyPatch("Disconnect", MethodType.Normal)]
-    internal class DisconnectPatch
-    {
-        public static void Prefix() 
-        { 
-            if (PhotonNetwork.InRoom) 
-            { 
-                Manager.boards.Clear();
-            } 
-        }
-    }
-
-    [HarmonyPatch(typeof(GorillaScoreBoard))]
-    [HarmonyPatch("GetBeginningString")]
-    internal static class Manager
+    [HarmonyPatch("GetBeginningString", MethodType.Normal)]
+    public static class Manager
     {
         public static List<GorillaScoreBoard> boards = new List<GorillaScoreBoard>();
         internal static Dictionary<string, string> DynamicDict = new Dictionary<string, string>()
@@ -79,11 +55,7 @@ namespace RCH
             get => enabled;
             set
             {
-                if (value) HarmonyPatches.ApplyHarmonyPatches();
-                else HarmonyPatches.RemoveHarmonyPatches();
-
                 enabled = value;
-                if (PhotonNetwork.InRoom) ForceUpdate();
             }
         }
 
@@ -112,7 +84,7 @@ namespace RCH
             DynamicDict["{pubname}"] = PhotonNetwork.CurrentRoom.IsVisible ? PhotonNetwork.CurrentRoom.Name : "-PRIVATE-";
         }
 
-        internal static void UpdateView()
+        public static void UpdateView()
         {
             if (RchView.Instance != null)
             {
@@ -128,13 +100,15 @@ namespace RCH
         {
             if (boards.Count != 0)
             {
+                Console.WriteLine("Forcing scoreboard updates");
                 foreach (GorillaScoreBoard board in boards)
                 {
-                    UpdateDict();
                     board.RedrawPlayerLines();
+                    Console.WriteLine($"{board.name} updated");
                 }
             }
         }
+
 
         internal static int GetTaggedPlayers()
         {
@@ -178,11 +152,34 @@ namespace RCH
             return teamPlayers;
         }
 
-        public static bool Prefix(ref string __result)
+        private static bool Prefix(ref string __result)
         {
             UpdateDict();
             __result = GenDynamicText(CustomTexts[Index]) + "\n   PLAYER      COLOR   MUTE   REPORT";
+
             return !Enabled;
+        }
+    }
+
+    [HarmonyPatch(typeof(GorillaScoreBoard))]
+    [HarmonyPatch("Awake", MethodType.Normal)]
+    public class ScoreboardAwakePatch
+    {
+        private static void Prefix(GorillaScoreBoard __instance)
+        {
+            if (!Manager.boards.Contains(__instance)) { Manager.boards.Add(__instance); }
+            if (!__instance.gameObject.GetComponent<ScoreboardBeginningManager>()) { __instance.gameObject.AddComponent<ScoreboardBeginningManager>(); }
+        }
+    }
+
+    [HarmonyPatch(typeof(PhotonNetwork))]
+    [HarmonyPatch("Disconnect", MethodType.Normal)]
+    public class OnRoomDisconnected
+    {
+        private static void Prefix()
+        {
+            if (!PhotonNetwork.InRoom) return;
+            Manager.boards.Clear();
         }
     }
 }
