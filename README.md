@@ -13,7 +13,7 @@ Dynamic text is a feature which allows you to include some values into your cust
 
 | Input | Output | Examples |
 | ------------- | ------------- | ------------- |
-| `{name}` | Displays the current Room ID | 5VA9 |
+| `{name}` | Displays the current Room ID | 5VA9, MONKE |
 | `{region}` | Displays the lobby region | US, EU |
 | `{mode}` | Displays the current gamemode | INFECTION, CASUAL |
 | `{public}` | Displays if the lobby is public/private | -PUBLIC-, -PRIVATE- |
