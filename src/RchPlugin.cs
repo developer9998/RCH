@@ -37,12 +37,6 @@ namespace RCH
             Console.WriteLine($"\nRCH loaded current index:\n{Manager.Index}");
 
             Manager.Enabled = true;
-
-            if (harmony == null)
-            {
-                harmony = new Harmony(PluginInfo.GUID);
-                harmony.PatchAll();
-            }
         }
 
         [HarmonyPatch(typeof(GorillaScoreBoard))]

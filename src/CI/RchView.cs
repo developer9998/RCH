@@ -73,6 +73,9 @@ namespace RCH.CI
                     Manager.Index--;
                     Manager.ForceUpdate();
                     break;
+                case EKeyboardKey.Enter:
+                    Manager.Enabled ^= true;
+                    break;
                 case EKeyboardKey.Back:
                     ReturnToMainMenu();
                     break;

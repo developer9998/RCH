@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using ComputerInterface.Patches;
+using Photon.Pun;
 using RCH.CI;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,6 @@ namespace RCH.Patches
 
         internal static string[] CustomTexts = new string[]
         {
-            "ROOM ID: {pubname} GAME ROOM: {mode}", // The current text used for the base game.
             "{count}/{max}    {mode} ROOM ID: {pubname}", // Displays the player count with the limit as well as some room info.
             "{count}/{max}    {public} {mode}, {name}", // Same as the previous one but it shows any room code you're in and not just the public lobby codes.
             "{count}/{max}    -ROOM HIDDEN-",  // Same as the previous one but without the room info.
@@ -51,7 +51,11 @@ namespace RCH.Patches
             get => enabled;
             set
             {
+                if (value) HarmonyPatches.ApplyHarmonyPatches();
+                else HarmonyPatches.RemoveHarmonyPatches();
+
                 enabled = value;
+                if (PhotonNetwork.InRoom) Manager.ForceUpdate();
             }
         }
 

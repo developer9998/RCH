@@ -70,6 +70,8 @@ namespace RCH.Patches
         {
             if (!(touchTime + debounceTime < Time.time)) return;
 
+            if (!Manager.Enabled) return;
+
             touchTime = Time.time;
             if (!(collider.GetComponentInParent<GorillaTriggerColliderHandIndicator>() != null)) return;
 
