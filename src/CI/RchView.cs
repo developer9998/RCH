@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ComputerInterface;
+﻿using ComputerInterface;
 using ComputerInterface.ViewLib;
 using RCH.Patches;
-using UnityEngine;
 
 namespace RCH.CI
 {
@@ -19,7 +15,7 @@ namespace RCH.CI
         /// <returns></returns>
         internal string HighlightDynamic(string text)
         {
-            foreach(string key in Manager.DynamicDict.Keys)
+            foreach (string key in Manager.DynamicDict.Keys)
             {
                 string highlightedKey;
                 highlightedKey = key.Replace("{", "<color=#F2BB05>{<color=#F9E900>");
@@ -54,8 +50,10 @@ namespace RCH.CI
                 str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLine();
                 str.AppendClr("Room Code Hider", "FF0066").AppendLine();
                 str.Append("By <color=#38FF8D>Frogrilla</color>").AppendLine();
-                str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLines(2).EndAlign();
+                str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLine();
+                str.EndAlign();
                 str.Append($"Current Header:\n{HighlightDynamic(Manager.CustomTexts[Manager.Index])}").AppendLine();
+                str.AppendClr((Manager.Enabled ? "\n Enabled" : "\n Disabled"), (Manager.Enabled ? "#01FF55" : "#FF0033")).AppendLine();
             });
         }
 

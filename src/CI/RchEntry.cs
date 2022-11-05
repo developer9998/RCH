@@ -1,5 +1,5 @@
-﻿using System;
-using ComputerInterface.Interfaces;
+﻿using ComputerInterface.Interfaces;
+using System;
 
 namespace RCH.CI
 {
