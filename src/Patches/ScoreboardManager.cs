@@ -76,7 +76,6 @@ namespace RCH.Patches
             if (collider.GetComponent<GorillaTriggerColliderHandIndicator>() != null)
             {
                 ButtonActivation();
-                GorillaTagger.Instance.offlineVRRig.PlayHandTapLocal(67, collider.GetComponent<GorillaTriggerColliderHandIndicator>().isLeftHand, 0.05f);
                 GorillaTagger.Instance.StartVibration(collider.GetComponent<GorillaTriggerColliderHandIndicator>().isLeftHand, GorillaTagger.Instance.tapHapticStrength / 2f, GorillaTagger.Instance.tapHapticDuration);
             }
         }
