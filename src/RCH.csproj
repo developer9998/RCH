@@ -17,14 +17,14 @@
     <Reference Include="BakeryRuntimeAssembly">
       <HintPath>$(GameAssemblyPath)\BakeryRuntimeAssembly.dll</HintPath>
     </Reference>
+	<Reference Include="Bepinject">
+      <HintPath>$(PluginsPath)\Bepinject-Auros\Bepinject.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(BepInExAssemblyPath)\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Harmony">
       <HintPath>$(BepInExAssemblyPath)\BepInEx.Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Bepinject">
-      <HintPath>$(PluginsPath)\Bepinject-Auros\Bepinject.dll</HintPath>
     </Reference>
     <Reference Include="Cinemachine">
       <HintPath>$(GameAssemblyPath)\Cinemachine.dll</HintPath>

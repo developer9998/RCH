@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ComputerInterface;
 using ComputerInterface.ViewLib;
+using RCH.Patches;
 using UnityEngine;
 
 namespace RCH.CI
@@ -10,6 +11,12 @@ namespace RCH.CI
     internal class RchView : ComputerView
     {
         public static RchView Instance;
+
+        /// <summary>
+        /// Highlights the dynamic text.
+        /// </summary>
+        /// <param name="text">The text that is being highlighted.</param>
+        /// <returns></returns>
         internal string HighlightDynamic(string text)
         {
             foreach(string key in Manager.DynamicDict.Keys)
@@ -23,6 +30,11 @@ namespace RCH.CI
 
             return text;
         }
+
+        /// <summary>
+        /// When the Computer Interface view is shown.
+        /// </summary>
+        /// <param name="args">The arguments used in this method.</param>
         public override void OnShow(object[] args)
         {
             base.OnShow(args);
@@ -31,6 +43,9 @@ namespace RCH.CI
             DrawScreen();
         }
 
+        /// <summary>
+        /// Updates the Computer Interface screen.
+        /// </summary>
         public void DrawScreen()
         {
             SetText(str =>
@@ -40,11 +55,14 @@ namespace RCH.CI
                 str.AppendClr("Room Code Hider", "FF0066").AppendLine();
                 str.Append("By <color=#38FF8D>Frogrilla</color>").AppendLine();
                 str.MakeBar('-', SCREEN_WIDTH, 0, "FFFFFF10").AppendLines(2).EndAlign();
-                str.AppendClr((Manager.Enabled ? "[Enabled]" : "[Disabled]"), (Manager.Enabled ? "#01FF55" : "#FF0033")).AppendLines(2);
                 str.Append($"Current Header:\n{HighlightDynamic(Manager.CustomTexts[Manager.Index])}").AppendLine();
             });
         }
 
+        /// <summary>
+        /// When a key is pressed on the keyboard in this menu.
+        /// </summary>
+        /// <param name="key">The key that was pressed.</param>
         public override void OnKeyPressed(EKeyboardKey key)
         {
             switch (key)
@@ -56,9 +74,6 @@ namespace RCH.CI
                 case EKeyboardKey.Left:
                     Manager.Index--;
                     Manager.ForceUpdate();
-                    break;
-                case EKeyboardKey.Enter:
-                    Manager.Enabled ^= true;
                     break;
                 case EKeyboardKey.Back:
                     ReturnToMainMenu();
