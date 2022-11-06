@@ -11,9 +11,6 @@ namespace RCH
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
     public class RchPlugin : BaseUnityPlugin
     {
-        public static Harmony harmony;
-        public static string IndexPath;
-
         internal void Start()
         {
             try { Zenjector.Install<CI.MainInstaller>().OnProject(); }
@@ -25,7 +22,7 @@ namespace RCH
 
             Console.WriteLine($"\nRCH loaded headers:\n{File.ReadAllText(HeaderPath)}");
 
-            IndexPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Options.txt");
+            string IndexPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Options.txt");
             if (File.Exists(IndexPath)) { if (File.ReadAllLines(IndexPath).Length == 0 || File.ReadAllLines(IndexPath).Length == 1) ResetSettings(); }
             else { File.WriteAllText(IndexPath, $"{Manager.Index}\n{Manager.Enabled}"); }
 
@@ -38,7 +35,7 @@ namespace RCH
         /// <summary>
         /// Sets the settings to their default value.
         /// </summary>
-        public static void ResetSettings() => File.WriteAllText(IndexPath, $"{Manager.Index}\n{Manager.Enabled}");
+        public static void ResetSettings() => File.WriteAllText(Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Headers.txt"), $"{Manager.Index}\n{Manager.Enabled}");
 
         [HarmonyPatch(typeof(GorillaScoreBoard))]
         [HarmonyPatch("Awake", MethodType.Normal)]
