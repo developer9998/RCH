@@ -17,8 +17,8 @@ namespace RCH
             catch { Console.WriteLine("RchView not installed"); }
 
             string HeaderPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Headers.txt");
-            if (File.Exists(HeaderPath)) Manager.CustomTexts = File.ReadAllLines(HeaderPath);
-            else File.WriteAllLines(HeaderPath, Manager.CustomTexts);
+            if (File.Exists(HeaderPath)) { Manager.CustomTexts = File.ReadAllLines(HeaderPath); }
+            else { File.WriteAllLines(HeaderPath, Manager.CustomTexts); }
 
             Console.WriteLine($"\nRCH loaded headers:\n{File.ReadAllText(HeaderPath)}");
 
@@ -35,7 +35,7 @@ namespace RCH
         /// <summary>
         /// Sets the settings to their default value.
         /// </summary>
-        public static void ResetSettings() => File.WriteAllText(Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Headers.txt"), $"{Manager.Index}\n{Manager.Enabled}");
+        public static void ResetSettings() => File.WriteAllText(Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Options.txt"), $"{Manager.Index}\n{Manager.Enabled}");
 
         [HarmonyPatch(typeof(GorillaScoreBoard))]
         [HarmonyPatch("Awake", MethodType.Normal)]
