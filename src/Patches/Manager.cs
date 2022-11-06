@@ -1,5 +1,4 @@
-﻿using ComputerInterface.Patches;
-using Photon.Pun;
+﻿using Photon.Pun;
 using RCH.CI;
 using System;
 using System.Collections.Generic;
@@ -41,7 +40,7 @@ namespace RCH.Patches
             {
                 if (value < 0) index = CustomTexts.Length - 1;
                 else index = value % CustomTexts.Length;
-                System.IO.File.WriteAllText(RchPlugin.IndexPath, value.ToString());
+                RchPlugin.ResetSettings();
             }
         }
 
@@ -55,7 +54,8 @@ namespace RCH.Patches
                 else HarmonyPatches.RemoveHarmonyPatches();
 
                 enabled = value;
-                if (PhotonNetwork.InRoom) Manager.ForceUpdate();
+                RchPlugin.ResetSettings();
+                if (PhotonNetwork.InRoom) ForceUpdate();
             }
         }
 
@@ -109,6 +109,9 @@ namespace RCH.Patches
         /// </summary>
         internal static void ForceUpdate()
         {
+            // Prevents the player from updating the scoreboards if they're not in a room.
+            if (!PhotonNetwork.InRoom) return;
+
             Console.WriteLine("Forcing scoreboard updates");
             if (boards.Count != 0)
             {

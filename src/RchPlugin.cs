@@ -5,7 +5,6 @@ using Photon.Pun;
 using RCH.Patches;
 using System;
 using System.IO;
-using WebSocketSharp;
 
 namespace RCH
 {
@@ -20,24 +19,26 @@ namespace RCH
             try { Zenjector.Install<CI.MainInstaller>().OnProject(); }
             catch { Console.WriteLine("RchView not installed"); }
 
-            string HeaderPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "CustomHeaders.txt");
+            string HeaderPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Headers.txt");
             if (File.Exists(HeaderPath)) Manager.CustomTexts = File.ReadAllLines(HeaderPath);
             else File.WriteAllLines(HeaderPath, Manager.CustomTexts);
 
             Console.WriteLine($"\nRCH loaded headers:\n{File.ReadAllText(HeaderPath)}");
 
-            IndexPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "CustomIndex.txt");
-            if (File.Exists(IndexPath))
-            {
-                if (File.ReadAllLines(IndexPath)[0].IsNullOrEmpty()) File.WriteAllText(IndexPath, 0.ToString()); // Index is set to 0 at default, so no need to change it here if there's nothing to change it to.
-                else try { Manager.Index = int.Parse(File.ReadAllLines(IndexPath)[0]); } catch { File.WriteAllText(IndexPath, 0.ToString()); };
-            }
-            else File.WriteAllText(IndexPath, 0.ToString());
+            IndexPath = Path.Combine(Path.GetDirectoryName(typeof(RchPlugin).Assembly.Location), "RCH_Options.txt");
+            if (File.Exists(IndexPath)) { if (File.ReadAllLines(IndexPath).Length == 0 || File.ReadAllLines(IndexPath).Length == 1) ResetSettings(); }
+            else { File.WriteAllText(IndexPath, $"{Manager.Index}\n{Manager.Enabled}"); }
 
             Console.WriteLine($"\nRCH loaded current index:\n{Manager.Index}");
 
-            Manager.Enabled = true;
+            Manager.Index = int.Parse(File.ReadAllLines(IndexPath)[0]);
+            Manager.Enabled = bool.Parse(File.ReadAllLines(IndexPath)[1]);
         }
+
+        /// <summary>
+        /// Sets the settings to their default value.
+        /// </summary>
+        public static void ResetSettings() => File.WriteAllText(IndexPath, $"{Manager.Index}\n{Manager.Enabled}");
 
         [HarmonyPatch(typeof(GorillaScoreBoard))]
         [HarmonyPatch("Awake", MethodType.Normal)]
