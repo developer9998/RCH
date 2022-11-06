@@ -20,9 +20,6 @@ Dynamic text is a feature which allows you to include some values into your cust
 | `{count}` | Displays the lobby's players | 2, 4, 6, 10 |
 | `{max}` | Displays the lobby player limit | 10 |
 | `{ping}` | Displays the lobby's ping | 40, 50 |
-| `{caught}` | Displays the players that are caught | 5, 10 |
-| `{blue}` | Displays the players on blue team | 4 |
-| `{red}` | Displays the players on red team | 6 |
 | `{pubname}` | Displays the current public Room ID | 98IE, -PRIVATE- |
 
 ### Disclaimer
